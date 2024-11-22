@@ -5,7 +5,7 @@ import sqlite3
 import pandas as pd
 import json
 
-def save_to_sql(data, db_path="recipes.db", table_name="recipes"):
+def save_to_sql(data, db_path="WeeklyRec/recipes.db", table_name="recipes"):
     """
     Save recipe dataset to an SQLite database.
 
@@ -21,7 +21,7 @@ def save_to_sql(data, db_path="recipes.db", table_name="recipes"):
     data.to_sql(table_name, conn, if_exists="replace", index=False)
     conn.close()
 
-def save_to_json(data, json_path="weekly_menu.json"):
+def save_to_json(data, json_path="WeeklyRec/weekly_menu.json"):
     """
     Save weekly meal plan to a JSON file.
 
@@ -35,7 +35,7 @@ def save_to_json(data, json_path="weekly_menu.json"):
     with open(json_path, "w") as json_file:
         json.dump(data, json_file, indent=4)
 
-def load_from_sql(db_path="recipes.db", table_name="recipes"):
+def load_from_sql(db_path="WeeklyRec/recipes.db", table_name="recipes"):
     """
     Load recipe dataset from an SQLite database.
 
@@ -53,7 +53,7 @@ def load_from_sql(db_path="recipes.db", table_name="recipes"):
 
 
 # Save this script to the file system for modularization
-with open("data_storage.py", "w") as f:
+with open("WeeklyRec/data_storage.py", "w") as f:
     f.write(save_to_sql.__code__.co_consts[0])
     f.write("\n")
     f.write(save_to_json.__code__.co_consts[0])

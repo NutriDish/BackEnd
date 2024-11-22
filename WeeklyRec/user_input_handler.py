@@ -59,5 +59,5 @@ def handle_user_input(request):
 
 
 # Save this script to the file system for modularization
-with open("/mnt/data/user_input_handler.py", "w") as f:
+with open("WeeklyRec/user_input_handler.py", "w") as f:
     f.write(handle_user_input.__code__.co_consts[0])

@@ -4,7 +4,7 @@ from recipe_search import search_recipes
 from weekly_meal_plan import generate_weekly_menu
 
 # Load dataset from SQLite
-data = load_from_sql(db_path="recipes.db", table_name="recipes")
+data = load_from_sql(db_path="WeeklyRec/recipes.db", table_name="recipes")
 
 # User input simulation
 user_input = {
@@ -21,7 +21,7 @@ user_input = {
 
 # Generate weekly menu
 weekly_menu, cooldown_tracker = generate_weekly_menu(data, user_input)
-save_to_json(weekly_menu, json_path="weekly_menu.json")
+save_to_json(weekly_menu, json_path="WeeklyRec/weekly_menu.json")
 
 # Output the result
 print("Weekly menu generated and saved to JSON.")
