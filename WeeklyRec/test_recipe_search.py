@@ -8,6 +8,7 @@ data = load_from_sql(db_path="WeeklyRec/recipes.db", table_name="recipes")
 # User input simulation
 user_input = {
     "keywords": "chicken",
+    "ingredients": ["chicken", "salt"],
     "nutritional_constraints": {
         "calories": {"min": 100, "max": 500},
         "protein": {"min": 10, "max": 50},
