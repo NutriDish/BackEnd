@@ -47,5 +47,7 @@ def search_recipes(data, user_input):
 
 
 # Save this script to the file system for modularization
+"""
 with open("WeeklyRec/recipe_search.py", "w") as f:
     f.write(search_recipes.__code__.co_consts[0])
+"""

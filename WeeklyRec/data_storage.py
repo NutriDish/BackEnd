@@ -53,9 +53,12 @@ def load_from_sql(db_path="WeeklyRec/recipes.db", table_name="recipes"):
 
 
 # Save this script to the file system for modularization
+
+"""
 with open("WeeklyRec/data_storage.py", "w") as f:
     f.write(save_to_sql.__code__.co_consts[0])
     f.write("\n")
     f.write(save_to_json.__code__.co_consts[0])
     f.write("\n")
     f.write(load_from_sql.__code__.co_consts[0])
+"""
