@@ -63,5 +63,7 @@ def generate_weekly_menu(data, user_input, cooldown_tracker=None, cooldown_weeks
 
 
 # Save this script to the file system for modularization
+"""
 with open("WeeklyRec/weekly_meal_plan.py", "w") as f:
     f.write(generate_weekly_menu.__code__.co_consts[0])
+"""
