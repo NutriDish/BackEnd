@@ -1,9 +1,11 @@
 import pandas as pd
-from data_storage import load_from_sql
-from recipe_search import search_recipes
+from scripts.data_storage import load_from_sql
+from scripts.recipe_search import search_recipes
+from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 # Load dataset from SQLite
-data = load_from_sql(db_path="WeeklyRec/recipes.db", table_name="recipes")
+data = load_from_sql(db_path=PROJECT_ROOT / "data" / "recipes.db", table_name="recipes")
 
 # User input simulation
 user_input = {

@@ -12,11 +12,11 @@ def search_recipes(data, user_input):
     Returns:
     - DataFrame: Filtered recipes matching the user's criteria.
     """
-    # Extract inputs
-    keywords = user_input["keywords"]
-    ingredients = user_input["ingredients"]
-    constraints = user_input["nutritional_constraints"]
-    tags = user_input["tags"]
+    # Extract inputs with default values
+    keywords = user_input.get("keywords", "")  # Default to an empty string
+    ingredients = user_input.get("ingredients", [])  # Default to an empty list
+    constraints = user_input.get("nutritional_constraints", {})
+    tags = user_input.get("tags", {})
 
     # Apply filters
     filtered_data = data.copy()
@@ -35,7 +35,7 @@ def search_recipes(data, user_input):
     for nutrient, values in constraints.items():
         if nutrient in filtered_data.columns:
             filtered_data = filtered_data[
-                (filtered_data[nutrient] >= values["min"]) & (filtered_data[nutrient] <= values["max"])
+                (filtered_data[nutrient] >= values.get("min", 0)) & (filtered_data[nutrient] <= values.get("max", 9999))
             ]
 
     # Filter by boolean tags
