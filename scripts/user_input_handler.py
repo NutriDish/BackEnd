@@ -1,20 +1,4 @@
-# Step 1: Define the user input handling script
-
-# user_input_handler.py
 def handle_user_input(request):
-    """
-    Handle user inputs from a mobile app or cloud request.
-
-    Parameters:
-    - request (dict): Input data with keys:
-        - 'keywords' (str, optional): Keywords for searching recipes.
-        - 'ingredients' (list, optional): Ingredients available for filtering recipes.
-        - 'nutritional_constraints' (dict, optional): Min/max values for calories, protein, fat, sodium.
-        - 'tags' (dict, optional): Boolean tags to filter recipes.
-
-    Returns:
-    - dict: Processed input data for recipe searching.
-    """
     # Initialize default nutritional constraints
     nutritional_constraints = {
         "calories": {"min": 0, "max": 9999},
@@ -56,10 +40,3 @@ def handle_user_input(request):
         "nutritional_constraints": nutritional_constraints,
         "tags": default_tags,
     }
-
-
-# Save this script to the file system for modularization
-"""
-with open("WeeklyRec/user_input_handler.py", "w") as f:
-    f.write(handle_user_input.__code__.co_consts[0])
-"""

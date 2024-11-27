@@ -1,20 +1,4 @@
-# Step 3: Define the weekly meal plan generation script
-
-# weekly_meal_plan.py
 def generate_weekly_menu(data, user_input, cooldown_tracker=None, cooldown_weeks=4):
-    """
-    Generate a weekly meal plan with cooldown and fallback handling.
-
-    Parameters:
-    - data (DataFrame): Filtered recipe dataset.
-    - user_input (dict): User preferences and tags.
-    - cooldown_tracker (dict, optional): Tracks recipes on cooldown. Defaults to None.
-    - cooldown_weeks (int): Number of weeks a recipe remains on cooldown.
-
-    Returns:
-    - dict: Weekly meal plan with recipes per day and meal type.
-    - dict: Updated cooldown tracker.
-    """
     if cooldown_tracker is None:
         cooldown_tracker = {}
 
@@ -60,10 +44,3 @@ def generate_weekly_menu(data, user_input, cooldown_tracker=None, cooldown_weeks
         weekly_menu.append(daily_menu)
 
     return weekly_menu, cooldown_tracker
-
-
-# Save this script to the file system for modularization
-"""
-with open("WeeklyRec/weekly_meal_plan.py", "w") as f:
-    f.write(generate_weekly_menu.__code__.co_consts[0])
-"""
