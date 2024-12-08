@@ -42,7 +42,7 @@ or
 GET = http://127.0.0.1:8080/meal_plan/1/
 
 recipe details:
-GET = http://127.0.0.1:8080/recipe_details_route/Boudin%20Blanc%20Terrine%20with%20Red%20Onion%20Confit/
+GET = http://127.0.0.1:8080/recipe_details/Boudin%20Blanc%20Terrine%20with%20Red%20Onion%20Confit/
 
 daily recommendations:
 POST =
