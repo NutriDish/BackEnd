@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from routes.user_routes import user_blueprint
 from routes.recipe_routes import recipe_blueprint
@@ -17,4 +18,5 @@ app.register_blueprint(daily_recommendations_blueprint, url_prefix="/daily_recom
 app.register_blueprint(image_classification_blueprint, url_prefix="/image")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port, debug=True)
