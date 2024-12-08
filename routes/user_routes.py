@@ -5,9 +5,20 @@ user_blueprint = Blueprint("user", __name__)
 
 @user_blueprint.route("/", methods=["POST"])
 def create_or_update_user():
-    """
+    """  
     Create or update a user.
-    Request body should include: {"user_id": 1, "name": "John", "weight": 70, "dob": "1993-01-15", "tags": {"pork": false, "alcohol": false}}
+
+    {
+        "userId": "1",
+        "dateReg": "2024-12-08",
+        "userName": "John Doe",
+        "email": "john.doe@example.com",
+        "password": "12345",
+        "age": "34",
+        "weight": 70,
+        "dateBirth": "1990-05-15",
+    }
+
     """
     try:
         user_data = request.get_json()
@@ -16,13 +27,7 @@ def create_or_update_user():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@user_blueprint.route("/<int:user_id>/", methods=["GET"])
+@user_blueprint.route("/<user_id>", methods=["GET"])
 def fetch_user(user_id):
-    """
-    Fetch user information by user ID.
-    """
-    try:
-        user_data = get_user(user_id)
-        return jsonify(user_data)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    return get_user(user_id)
+

@@ -1,30 +1,31 @@
 import random
+import sqlite3
 from scripts.data_storage import get_db_connection
 
 def get_recipes_not_in_cooldown(user_id, meal_type, selected_tags=None, cooldown_days=7):
     """
     Fetch recipes that are not in cooldown and match selected tags for a specific user and meal type.
-    :param user_id: The ID of the user requesting the meal plan.
-    :param meal_type: The type of meal (e.g., breakfast, lunch, dinner).
-    :param selected_tags: Filters for tags such as dietary preferences.
-    :param cooldown_days: Number of days for which recipes should not be reused.
-    :return: A list of recipes that match the meal type, tags, and cooldown conditions.
     """
     conn = get_db_connection()
+    conn.row_factory = sqlite3.Row  # Ensure rows can be accessed as dictionaries
     cursor = conn.cursor()
 
-    # Calculate cooldown period
+    # Query to exclude recipes in cooldown
     cursor.execute("""
         SELECT * FROM recipes
-        WHERE id NOT IN (
-            SELECT recipe_id
-            FROM meal_plan
-            WHERE user_id = ? AND meal_type = ? AND date_used > DATE('now', ?)
+        WHERE title NOT IN (
+            SELECT recipeTitle
+            FROM mealPlan
+            WHERE userId = ? AND mealType = ? AND dateUsed > DATE('now', ?)
         )
-    """, (user_id, meal_type, f"-{cooldown_days} days"))
+        AND is_{} = 1
+    """.format(meal_type), (user_id, meal_type, f"-{cooldown_days} days"))
 
     recipes = cursor.fetchall()
     conn.close()
+
+    # Convert sqlite3.Row objects to dictionaries
+    recipes = [dict(row) for row in recipes]
 
     # Filter recipes by selected tags if any
     if selected_tags:
@@ -36,7 +37,7 @@ def get_recipes_not_in_cooldown(user_id, meal_type, selected_tags=None, cooldown
 def filter_recipes_by_tags(recipes, tags):
     """
     Filters recipes by the selected tags.
-    :param recipes: The list of recipes.
+    :param recipes: The list of recipes (as dictionaries).
     :param tags: The selected tags for filtering.
     :return: A filtered list of recipes based on selected tags.
     """
@@ -55,54 +56,43 @@ def filter_recipes_by_tags(recipes, tags):
 def generate_meal_plan(user_id, selected_tags=None):
     """
     Generate a weekly meal plan for a user, respecting cooldowns and filtering by tags.
-    :param user_id: The ID of the user requesting the meal plan.
-    :param selected_tags: Filters for dietary preferences and other tags.
-    :return: A dictionary representing a 7-day meal plan with meals for each day.
     """
     meal_types = ["breakfast", "lunch", "dinner", "snack", "dessert"]
-    meal_plan = {meal: [] for meal in meal_types}
+    meal_plan = {f"Day {day + 1}": {} for day in range(7)}  # Initialize a 7-day plan
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Generate meals for 7 days
     for day in range(7):
         daily_meals = {}
         for meal_type in meal_types:
-            # Get recipes that are not in cooldown and match the tags
             recipes = get_recipes_not_in_cooldown(user_id, meal_type, selected_tags)
 
             if not recipes:
-                continue  # If no recipes are available, skip to the next meal type
+                continue
 
-            # Randomly select a recipe for the meal type
+            # Select a random recipe
             selected_recipe = random.choice(recipes)
 
-            dietary = {key: selected_recipe[val] for key, val in {
-                "vegetarian": "is_vegetarian",
-                "vegan": "is_vegan",
-                "pescatarian": "is_pescatarian",
-                "paleo": "is_paleo",
-                "dairy free": "is_dairy_free",
-                "fat free": "is_fat_free",
-                "peanut free": "is_peanut_free",
-                "soy free": "is_soy_free",
-                "wheat free": "is_wheat_free",
-                "low carb": "is_low_carb",
-                "low cal": "is_low_cal",
-                "low fat": "is_low_fat",
-                "low sodium": "is_low_sodium",
-                "low sugar": "is_low_sugar",
-                "low cholesterol": "is_low_cholesterol"
-            }.items() if selected_recipe[val] == 1}
+            # Insert into mealPlan table
+            cursor.execute("""
+                INSERT INTO mealPlan (userId, recipeTitle, mealType, dateUsed)
+                VALUES (?, ?, ?, DATE('now'))
+            """, (user_id, selected_recipe["title"], meal_type))
+
+            dietary = {key: selected_recipe[key] for key in [
+                "is_vegetarian", "is_vegan", "is_pescatarian", "is_paleo", 
+                "is_dairy_free", "is_fat_free", "is_peanut_free", "is_soy_free",
+                "is_wheat_free", "is_low_carb", "is_low_cal", "is_low_fat",
+                "is_low_sodium", "is_low_sugar", "is_low_cholesterol"
+            ] if selected_recipe[key] == 1}
 
             ingredients = {ingredient: selected_recipe[f'has_{ingredient}'] for ingredient in [
-                'pork', 'alcohol', 'beef', 'bread', 'butter', 'cabbage', 'carrot', 'cheese', 
-                'chicken', 'egg', 'eggplant', 'fish', 'onion', 'pasta', 'peanut', 'potato', 
+                'pork', 'alcohol', 'beef', 'bread', 'butter', 'cabbage', 'carrot', 'cheese',
+                'chicken', 'egg', 'eggplant', 'fish', 'onion', 'pasta', 'peanut', 'potato',
                 'rice', 'shrimp', 'tofu', 'tomato', 'zucchini'
             ] if selected_recipe[f'has_{ingredient}'] == 1}
 
-            # Limit dietary preferences to 2 and ingredients to 3
             dietary = dict(list(dietary.items())[:2])
             ingredients = dict(list(ingredients.items())[:3])
 
@@ -112,8 +102,9 @@ def generate_meal_plan(user_id, selected_tags=None):
                 "dietary": dietary,
                 "ingredients": ingredients
             }
-        
+
         meal_plan[f"Day {day + 1}"] = daily_meals
 
+    conn.commit()
     conn.close()
     return meal_plan

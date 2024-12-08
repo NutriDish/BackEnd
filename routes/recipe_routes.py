@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from scripts.recipe_search import search_recipes
+from scripts.recipe_search import search_recipes, search_recipes_by_query
 from routes.recipe_details_routes import get_recipe_details  # Import the new function
 
 recipe_blueprint = Blueprint("recipe", __name__)
@@ -8,6 +8,11 @@ recipe_blueprint = Blueprint("recipe", __name__)
 def search():
     """
     Search for recipes based on query and filters.
+
+    {
+        "query": "avocado toast"
+    }
+
     """
     try:
         user_input = request.get_json()
@@ -16,15 +21,14 @@ def search():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@recipe_blueprint.route("/<string:title>/", methods=["GET"])
-def details(title):
+@recipe_blueprint.route("/search", methods=["GET"])
+def search_get():
     """
-    Fetch details of a single recipe by title.
+    Search for recipes based on a query passed as a URL parameter.
     """
     try:
-        recipe = get_recipe_details(title)
-        if "error" in recipe:
-            return jsonify(recipe), 404
-        return jsonify(recipe)
+        query = request.args.get("query", "").lower()  # Get query parameter from URL
+        results = search_recipes_by_query(query)  # Call the new function
+        return jsonify(results), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
